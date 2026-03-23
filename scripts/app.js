@@ -9,9 +9,13 @@ const resultDiv = document.getElementById('result');
 const errorDiv = document.getElementById('error');
 const loadingDiv = document.getElementById('loading');
 const playSound = document.getElementById('playSound');
+const wordImageSection = document.getElementById('wordImageSection');
+const wordImage = document.getElementById('wordImage');
+const wordImageCaption = document.getElementById('wordImageCaption');
 
 // 2. API CONFIGURATION
 const API_URL = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
+const WIKI_API_URL = 'https://en.wikipedia.org/api/rest_v1/page/summary/';
 
 // 3. EVENT LISTENERS
 searchBtn.addEventListener('click', searchWord);
@@ -40,8 +44,11 @@ async function searchWord() {
   hideResult();
 
   try {
-    // Fetch data from API
-    const response = await fetch(`${API_URL}${word.toLowerCase()}`);
+    // Fetch dictionary data and Wikipedia image in parallel
+    const [response, wikiResponse] = await Promise.all([
+      fetch(`${API_URL}${word.toLowerCase()}`),
+      fetch(`${WIKI_API_URL}${encodeURIComponent(word.toLowerCase())}`).catch(() => null)
+    ]);
 
     // Handle 404 error
     if (!response.ok) {
@@ -54,11 +61,13 @@ async function searchWord() {
       return;
     }
 
-    // Parse response
+    // Parse responses
     const data = await response.json();
-    
+    const wikiData = wikiResponse && wikiResponse.ok ? await wikiResponse.json() : null;
+
     // Display results
     displayResult(data[0]);
+    displayWordImage(wikiData);
     hideError();
     hideLoading();
 
@@ -209,7 +218,21 @@ function displayResult(wordData) {
   showResult();
 }
 
-// 6. PLAY AUDIO FUNCTION
+// 6. DISPLAY WORD IMAGE FUNCTION
+function displayWordImage(wikiData) {
+  const thumbnail = wikiData && wikiData.thumbnail;
+
+  if (thumbnail && thumbnail.source) {
+    wordImage.src = thumbnail.source;
+    wordImage.alt = wikiData.title || '';
+    wordImageCaption.textContent = wikiData.description || wikiData.title || '';
+    wordImageSection.classList.remove('hidden');
+  } else {
+    wordImageSection.classList.add('hidden');
+  }
+}
+
+// 7. PLAY AUDIO FUNCTION
 function playAudio() {
   const audioUrl = playSound.dataset.audio;
 
@@ -224,7 +247,7 @@ function playAudio() {
   });
 }
 
-// 7. UI HELPER FUNCTIONS
+// 8. UI HELPER FUNCTIONS
 function showError(message) {
   errorDiv.textContent = message;
   errorDiv.classList.remove('hidden');
@@ -251,7 +274,7 @@ function hideResult() {
   resultDiv.classList.add('hidden');
 }
 
-// 8. FOCUS ON INPUT WHEN PAGE LOADS
+// 9. FOCUS ON INPUT WHEN PAGE LOADS
 window.addEventListener('load', () => {
   searchInput.focus();
 });
