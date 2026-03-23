@@ -2,6 +2,28 @@ const API_BASE = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
 const MAX_DEFINITIONS = 5;
 const MAX_SYNONYMS = 10;
 
+const POS_VI = {
+  noun: 'Danh từ',
+  verb: 'Động từ',
+  adjective: 'Tính từ',
+  adverb: 'Trạng từ',
+  pronoun: 'Đại từ',
+  preposition: 'Giới từ',
+  conjunction: 'Liên từ',
+  interjection: 'Thán từ',
+  exclamation: 'Thán từ',
+  article: 'Mạo từ',
+  abbreviation: 'Từ viết tắt',
+  idiom: 'Thành ngữ',
+  phrase: 'Cụm từ',
+  suffix: 'Hậu tố',
+  prefix: 'Tiền tố',
+  numeral: 'Số từ',
+  determiner: 'Từ hạn định',
+  'auxiliary verb': 'Trợ động từ',
+  'modal verb': 'Động từ tình thái',
+};
+
 const wordInput = document.getElementById('wordInput');
 const searchBtn = document.getElementById('searchBtn');
 const errorMsg = document.getElementById('errorMsg');
@@ -24,10 +46,10 @@ async function lookupWord(word) {
     if (!response.ok) {
       if (response.status === 404) {
         const errorText = document.createElement('span');
-        errorText.textContent = `No definition found for "${word.trim()}". Please check the spelling and try again.`;
+        errorText.textContent = `Không tìm thấy định nghĩa cho "${word.trim()}". Vui lòng kiểm tra lại chính tả và thử lại.`;
         showErrorNode(errorText);
       } else {
-        showError('An error occurred while fetching data. Please try again.');
+        showError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại.');
       }
       return;
     }
@@ -35,7 +57,7 @@ async function lookupWord(word) {
     const data = await response.json();
     renderResult(data[0]);
   } catch (err) {
-    showError('Network error. Please check your connection and try again.');
+    showError('Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại.');
   } finally {
     setLoading(false);
   }
@@ -62,7 +84,7 @@ function renderResult(entry) {
       if (phonetic.audio) {
         const btn = document.createElement('button');
         btn.className = 'audio-btn';
-        btn.textContent = '🔊 Play';
+        btn.textContent = '🔊 Phát âm';
         btn.addEventListener('click', () => {
           if (currentAudio) {
             currentAudio.pause();
@@ -85,7 +107,7 @@ function renderResult(entry) {
 
       const pos = document.createElement('span');
       pos.className = 'part-of-speech';
-      pos.textContent = meaning.partOfSpeech;
+      pos.textContent = POS_VI[meaning.partOfSpeech.toLowerCase()] || meaning.partOfSpeech;
       block.appendChild(pos);
 
       const defList = document.createElement('ul');
@@ -115,7 +137,7 @@ function renderResult(entry) {
 
         const label = document.createElement('div');
         label.className = 'synonyms-label';
-        label.textContent = 'Synonyms:';
+        label.textContent = 'Từ đồng nghĩa:';
         synSection.appendChild(label);
 
         const tags = document.createElement('div');
