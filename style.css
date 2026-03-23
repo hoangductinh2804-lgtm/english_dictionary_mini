@@ -1,0 +1,220 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
+  color: #333;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+header h1 {
+  font-size: 2rem;
+  color: #2563eb;
+}
+
+header .subtitle {
+  color: #6b7280;
+  margin-top: 6px;
+  font-size: 0.95rem;
+}
+
+/* Search Box */
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+  border-color: #2563eb;
+}
+
+.search-box button {
+  padding: 12px 24px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-box button:hover {
+  background: #1d4ed8;
+}
+
+.search-box button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.hidden {
+  display: none !important;
+}
+
+.error-msg {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.loading {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  padding: 16px;
+}
+
+/* Result Card */
+.result {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.word-header {
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 16px;
+}
+
+.word-header h2 {
+  font-size: 2rem;
+  color: #1e3a8a;
+  text-transform: capitalize;
+}
+
+.phonetics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.phonetic-text {
+  color: #6b7280;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.audio-btn {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  border-radius: 20px;
+  padding: 4px 14px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s;
+}
+
+.audio-btn:hover {
+  background: #dbeafe;
+}
+
+/* Meaning Blocks */
+.meaning-block {
+  margin-bottom: 24px;
+}
+
+.part-of-speech {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2563eb;
+  background: #eff6ff;
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.definitions-list {
+  list-style: none;
+  padding: 0;
+}
+
+.definitions-list li {
+  padding: 8px 0 8px 16px;
+  border-left: 3px solid #e5e7eb;
+  margin-bottom: 8px;
+  font-size: 0.97rem;
+  line-height: 1.6;
+}
+
+.definition-example {
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+/* Synonyms */
+.synonyms-section {
+  margin-top: 8px;
+}
+
+.synonyms-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.synonyms-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.synonym-tag {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 3px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.synonym-tag:hover {
+  background: #e5e7eb;
+}

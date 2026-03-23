@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>English Dictionary Mini</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📖 English Dictionary Mini</h1>
+      <p class="subtitle">Look up meanings, synonyms, and pronunciation</p>
+    </header>
+
+    <div class="search-box">
+      <input
+        type="text"
+        id="wordInput"
+        placeholder="Enter an English word..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="searchBtn">Search</button>
+    </div>
+
+    <div id="errorMsg" class="error-msg hidden"></div>
+    <div id="loading" class="loading hidden">Searching...</div>
+
+    <div id="result" class="result hidden">
+      <div class="word-header">
+        <h2 id="wordTitle"></h2>
+        <div class="phonetics" id="phonetics"></div>
+      </div>
+
+      <div id="meanings"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
