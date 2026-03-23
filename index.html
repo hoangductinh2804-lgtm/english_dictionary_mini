@@ -9,19 +9,22 @@
 <body>
   <div class="container">
     <header>
-      <h1>📖 Từ Điển Anh Mini</h1>
+      <span class="header-icon">📖</span>
+      <h1>Từ Điển Anh Mini</h1>
       <p class="subtitle">Tra nghĩa, từ đồng nghĩa và cách phát âm</p>
     </header>
 
-    <div class="search-box">
-      <input
-        type="text"
-        id="wordInput"
-        placeholder="Nhập một từ tiếng Anh..."
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button id="searchBtn">Tìm kiếm</button>
+    <div class="search-card">
+      <div class="search-box">
+        <input
+          type="text"
+          id="wordInput"
+          placeholder="Nhập một từ tiếng Anh..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="searchBtn">🔍 Tìm kiếm</button>
+      </div>
     </div>
 
     <div id="errorMsg" class="error-msg hidden"></div>
@@ -35,6 +38,8 @@
 
       <div id="meanings"></div>
     </div>
+
+    <footer>Dữ liệu từ Free Dictionary API · Dịch bởi MyMemory</footer>
   </div>
 
   <script src="app.js"></script>

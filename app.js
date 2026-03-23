@@ -145,23 +145,33 @@ function renderResult(entry) {
 
       const pos = document.createElement('span');
       pos.className = 'part-of-speech';
+      pos.dataset.pos = meaning.partOfSpeech.toLowerCase();
       pos.textContent = POS_VI[meaning.partOfSpeech.toLowerCase()] || meaning.partOfSpeech;
       block.appendChild(pos);
 
       const defList = document.createElement('ul');
       defList.className = 'definitions-list';
 
-      meaning.definitions.slice(0, MAX_DEFINITIONS).forEach(def => {
+      meaning.definitions.slice(0, MAX_DEFINITIONS).forEach((def, idx) => {
         const li = document.createElement('li');
-        li.textContent = def.definition;
+
+        const numSpan = document.createElement('span');
+        numSpan.className = 'def-num';
+        numSpan.textContent = idx + 1;
+
+        const bodySpan = document.createElement('span');
+        bodySpan.className = 'def-body';
+        bodySpan.textContent = def.definition;
 
         if (def.example) {
           const example = document.createElement('div');
           example.className = 'definition-example';
           example.textContent = `"${def.example}"`;
-          li.appendChild(example);
+          bodySpan.appendChild(example);
         }
 
+        li.appendChild(numSpan);
+        li.appendChild(bodySpan);
         defList.appendChild(li);
       });
 
