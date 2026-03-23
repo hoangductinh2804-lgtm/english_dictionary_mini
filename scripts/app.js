@@ -47,7 +47,7 @@ async function searchWord() {
     // Fetch dictionary data and Wikipedia image in parallel
     const [response, wikiResponse] = await Promise.all([
       fetch(`${API_URL}${word.toLowerCase()}`),
-      fetch(`${WIKI_API_URL}${encodeURIComponent(word.toLowerCase())}`).catch(() => null)
+      fetch(`${WIKI_API_URL}${encodeURIComponent(word.toLowerCase())}`).catch((err) => { console.error('Wikipedia API error:', err); return null; })
     ]);
 
     // Handle 404 error
@@ -225,7 +225,7 @@ function displayWordImage(wikiData) {
   if (thumbnail && thumbnail.source) {
     wordImage.src = thumbnail.source;
     wordImage.alt = wikiData.title || '';
-    wordImageCaption.textContent = wikiData.description || wikiData.title || '';
+    wordImageCaption.textContent = wikiData.description || 'Image from Wikipedia';
     wordImageSection.classList.remove('hidden');
   } else {
     wordImageSection.classList.add('hidden');
