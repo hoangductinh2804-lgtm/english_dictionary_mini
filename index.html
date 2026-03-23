@@ -1,30 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>English Dictionary Mini</title>
+  <title>Từ điển Anh Việt Mini</title>
   <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
   <div class="container">
     <!-- Header -->
     <header class="header">
-      <h1>📚 English Dictionary</h1>
-      <p class="subtitle">Search for English words and discover their meanings</p>
+      <span class="header-badge">Mini Dictionary</span>
+      <h1>📚 Từ điển tiếng Anh</h1>
+      <p class="subtitle">Tra cứu từ tiếng Anh và khám phá nghĩa của chúng</p>
     </header>
 
     <!-- Search Section -->
-    <div class="search-section">
-      <input 
-        type="text" 
-        id="searchInput" 
-        class="search-input" 
-        placeholder="Enter a word..."
-        autocomplete="off"
-      >
-      <button id="searchBtn" class="search-btn">🔍 Search</button>
-    </div>
+    <section class="search-panel">
+      <label class="search-label" for="searchInput">Nhập từ cần tra:</label>
+      <div class="search-section">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Nhập một từ..."
+          autocomplete="off"
+        >
+        <button id="searchBtn" class="search-btn" type="button">🔍 Tìm kiếm</button>
+      </div>
+      <p class="search-help">Mẹo: Bạn có thể bấm Enter để tìm nhanh.</p>
+      <div class="quick-words" aria-label="Từ gợi ý">
+        <button class="quick-word" type="button" data-word="hello">hello</button>
+        <button class="quick-word" type="button" data-word="beautiful">beautiful</button>
+        <button class="quick-word" type="button" data-word="learn">learn</button>
+        <button class="quick-word" type="button" data-word="kind">kind</button>
+      </div>
+    </section>
+
+    <section id="historySection" class="history-panel hidden" aria-live="polite">
+      <div class="history-head">
+        <h2>Lịch sử tìm kiếm</h2>
+        <button id="clearHistoryBtn" class="clear-history-btn" type="button">Xóa lịch sử</button>
+      </div>
+      <p id="historyEmpty" class="history-empty">Bạn chưa tìm từ nào.</p>
+      <div id="historyList" class="history-list"></div>
+    </section>
+
+    <section class="guide-box">
+      <h2>Cách sử dụng nhanh</h2>
+      <p>1) Nhập từ, 2) Bấm tìm kiếm, 3) Xem nghĩa, ví dụ và phát âm.</p>
+    </section>
 
     <!-- Error Message -->
     <div id="error" class="error-message"></div>
@@ -44,25 +69,26 @@
         </div>
         <button id="playSound" class="play-sound-btn">🔊</button>
       </div>
+      <p id="resultMeta" class="result-meta hidden"></p>
 
       <!-- Part of Speech -->
       <div id="partsOfSpeech" class="parts-of-speech"></div>
 
       <!-- Synonyms -->
       <div id="synonymsSection" class="synonyms-section hidden">
-        <h3>Synonyms</h3>
+        <h3>Từ đồng nghĩa</h3>
         <div id="synonymsList" class="synonyms-list"></div>
       </div>
 
       <!-- Antonyms -->
       <div id="antonymsSection" class="antonyms-section hidden">
-        <h3>Antonyms</h3>
+        <h3>Từ trái nghĩa</h3>
         <div id="antonymsList" class="antonyms-list"></div>
       </div>
 
       <!-- Source -->
       <div id="sourceSection" class="source-section hidden">
-        <h3>Source</h3>
+        <h3>Nguồn</h3>
         <a id="sourceLink" href="#" target="_blank"></a>
       </div>
     </div>
