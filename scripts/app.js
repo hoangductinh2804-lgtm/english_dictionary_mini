@@ -18,8 +18,11 @@ const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
 // 2. API CONFIGURATION
 const API_URL = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
+const TRANSLATE_API_URL = 'https://api.mymemory.translated.net/get';
 const SEARCH_HISTORY_KEY = 'dictionary_search_history';
 const MAX_HISTORY_ITEMS = 8;
+const MAX_TRANSLATE_CHARS = 480; // MyMemory free tier: max ~500 chars per request
+const translationCache = new Map();
 const PART_OF_SPEECH_LABELS = {
   noun: 'Danh từ',
   verb: 'Động từ',
@@ -132,7 +135,7 @@ function displayResult(wordData) {
     playSound.style.cursor = 'pointer';
     playSound.disabled = false;
   } else {
-    delete playSound.dataset.audio;
+    playSound.removeAttribute('data-audio');
     playSound.style.opacity = '0.5';
     playSound.style.cursor = 'not-allowed';
     playSound.disabled = true;
@@ -180,14 +183,31 @@ function displayResult(wordData) {
       const defText = document.createElement('div');
       defText.className = 'definition-text';
       defText.textContent = def.definition;
-
       defItem.appendChild(defText);
+
+      const vnDefDiv = document.createElement('div');
+      vnDefDiv.className = 'definition-vi loading-vi';
+      vnDefDiv.textContent = 'Đang dịch...';
+      defItem.appendChild(vnDefDiv);
 
       if (def.example) {
         const exampleDiv = document.createElement('div');
         exampleDiv.className = 'definition-example';
-        exampleDiv.textContent = `"${def.example}"`;
+
+        const exEnSpan = document.createElement('span');
+        exEnSpan.className = 'example-en';
+        exEnSpan.textContent = `"${def.example}"`;
+        exampleDiv.appendChild(exEnSpan);
+
+        const vnExDiv = document.createElement('div');
+        vnExDiv.className = 'example-vi loading-vi';
+        vnExDiv.textContent = 'Đang dịch...';
+        exampleDiv.appendChild(vnExDiv);
+
         defItem.appendChild(exampleDiv);
+        translateAndDisplay(def.definition, def.example, vnDefDiv, vnExDiv);
+      } else {
+        translateAndDisplay(def.definition, null, vnDefDiv, null);
       }
 
       definitionsDiv.appendChild(defItem);
@@ -273,7 +293,55 @@ function playAudio() {
   });
 }
 
-// 7. UI HELPER FUNCTIONS
+// 7. TRANSLATION FUNCTIONS
+async function translateText(text) {
+  if (!text || !text.trim()) return '';
+  const key = text.trim();
+  if (translationCache.has(key)) return translationCache.get(key);
+  try {
+    const truncated = text.substring(0, MAX_TRANSLATE_CHARS);
+    const response = await fetch(
+      `${TRANSLATE_API_URL}?q=${encodeURIComponent(truncated)}&langpair=en|vi`
+    );
+    if (!response.ok) return '';
+    const data = await response.json();
+    // responseStatus may be number or string depending on API version
+    if (data.responseStatus == 200 && data.responseData && data.responseData.translatedText) {
+      const result = data.responseData.translatedText;
+      translationCache.set(key, result);
+      return result;
+    }
+    return '';
+  } catch {
+    return '';
+  }
+}
+
+// Fetch translations and update the corresponding DOM elements.
+// Uses isConnected to guard against race conditions where the user
+// searches a new word before the previous translations finish loading.
+async function translateAndDisplay(definition, example, vnDefDiv, vnExDiv) {
+  const translated = await translateText(definition);
+  if (vnDefDiv && vnDefDiv.isConnected) {
+    if (translated) {
+      vnDefDiv.classList.remove('loading-vi');
+      vnDefDiv.textContent = `🇻🇳 ${translated}`;
+    } else {
+      vnDefDiv.remove();
+    }
+  }
+  if (example && vnExDiv && vnExDiv.isConnected) {
+    const translatedEx = await translateText(example);
+    if (translatedEx) {
+      vnExDiv.classList.remove('loading-vi');
+      vnExDiv.textContent = `🇻🇳 "${translatedEx}"`;
+    } else {
+      vnExDiv.remove();
+    }
+  }
+}
+
+// 8. UI HELPER FUNCTIONS
 function showError(message) {
   errorDiv.textContent = message;
   errorDiv.classList.remove('hidden');
@@ -380,7 +448,7 @@ function renderSearchHistory() {
   });
 }
 
-// 8. FOCUS ON INPUT WHEN PAGE LOADS
+// 9. FOCUS ON INPUT WHEN PAGE LOADS
 window.addEventListener('load', () => {
   renderSearchHistory();
   searchInput.focus();
