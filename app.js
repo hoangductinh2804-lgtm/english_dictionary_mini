@@ -1,0 +1,195 @@
+const API_BASE = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
+const MAX_DEFINITIONS = 5;
+const MAX_SYNONYMS = 10;
+
+const wordInput = document.getElementById('wordInput');
+const searchBtn = document.getElementById('searchBtn');
+const errorMsg = document.getElementById('errorMsg');
+const loading = document.getElementById('loading');
+const result = document.getElementById('result');
+const wordTitle = document.getElementById('wordTitle');
+const phoneticsDiv = document.getElementById('phonetics');
+const meaningsDiv = document.getElementById('meanings');
+
+async function lookupWord(word) {
+  if (!word.trim()) return;
+
+  setLoading(true);
+  hideError();
+  hideResult();
+
+  try {
+    const response = await fetch(`${API_BASE}${encodeURIComponent(word.trim())}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        const errorText = document.createElement('span');
+        errorText.textContent = `No definition found for "${word.trim()}". Please check the spelling and try again.`;
+        showErrorNode(errorText);
+      } else {
+        showError('An error occurred while fetching data. Please try again.');
+      }
+      return;
+    }
+
+    const data = await response.json();
+    renderResult(data[0]);
+  } catch (err) {
+    showError('Network error. Please check your connection and try again.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderResult(entry) {
+  // Word title
+  wordTitle.textContent = entry.word;
+
+  // Phonetics
+  phoneticsDiv.innerHTML = '';
+  const phoneticText = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text);
+  if (phoneticText) {
+    const span = document.createElement('span');
+    span.className = 'phonetic-text';
+    span.textContent = phoneticText;
+    phoneticsDiv.appendChild(span);
+  }
+
+  let currentAudio = null;
+
+  if (entry.phonetics) {
+    entry.phonetics.forEach(phonetic => {
+      if (phonetic.audio) {
+        const btn = document.createElement('button');
+        btn.className = 'audio-btn';
+        btn.textContent = '🔊 Play';
+        btn.addEventListener('click', () => {
+          if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+          }
+          currentAudio = new Audio(phonetic.audio);
+          currentAudio.play();
+        });
+        phoneticsDiv.appendChild(btn);
+      }
+    });
+  }
+
+  // Meanings
+  meaningsDiv.innerHTML = '';
+  if (entry.meanings) {
+    entry.meanings.forEach(meaning => {
+      const block = document.createElement('div');
+      block.className = 'meaning-block';
+
+      const pos = document.createElement('span');
+      pos.className = 'part-of-speech';
+      pos.textContent = meaning.partOfSpeech;
+      block.appendChild(pos);
+
+      const defList = document.createElement('ul');
+      defList.className = 'definitions-list';
+
+      meaning.definitions.slice(0, MAX_DEFINITIONS).forEach(def => {
+        const li = document.createElement('li');
+        li.textContent = def.definition;
+
+        if (def.example) {
+          const example = document.createElement('div');
+          example.className = 'definition-example';
+          example.textContent = `"${def.example}"`;
+          li.appendChild(example);
+        }
+
+        defList.appendChild(li);
+      });
+
+      block.appendChild(defList);
+
+      // Synonyms (from meaning-level or definition-level)
+      const synonyms = collectSynonyms(meaning);
+      if (synonyms.length > 0) {
+        const synSection = document.createElement('div');
+        synSection.className = 'synonyms-section';
+
+        const label = document.createElement('div');
+        label.className = 'synonyms-label';
+        label.textContent = 'Synonyms:';
+        synSection.appendChild(label);
+
+        const tags = document.createElement('div');
+        tags.className = 'synonyms-tags';
+        synonyms.forEach(syn => {
+          const tag = document.createElement('span');
+          tag.className = 'synonym-tag';
+          tag.textContent = syn;
+          tag.addEventListener('click', () => {
+            wordInput.value = syn;
+            lookupWord(syn);
+          });
+          tags.appendChild(tag);
+        });
+
+        synSection.appendChild(tags);
+        block.appendChild(synSection);
+      }
+
+      meaningsDiv.appendChild(block);
+    });
+  }
+
+  showResult();
+}
+
+function collectSynonyms(meaning) {
+  const synSet = new Set();
+
+  if (meaning.synonyms) {
+    meaning.synonyms.forEach(s => synSet.add(s));
+  }
+
+  if (meaning.definitions) {
+    meaning.definitions.forEach(def => {
+      if (def.synonyms) {
+        def.synonyms.forEach(s => synSet.add(s));
+      }
+    });
+  }
+
+  return Array.from(synSet).slice(0, MAX_SYNONYMS);
+}
+
+function setLoading(isLoading) {
+  searchBtn.disabled = isLoading;
+  loading.classList.toggle('hidden', !isLoading);
+}
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.remove('hidden');
+}
+
+function showErrorNode(node) {
+  errorMsg.textContent = '';
+  errorMsg.appendChild(node);
+  errorMsg.classList.remove('hidden');
+}
+
+function hideError() {
+  errorMsg.classList.add('hidden');
+}
+
+function showResult() {
+  result.classList.remove('hidden');
+}
+
+function hideResult() {
+  result.classList.add('hidden');
+}
+
+searchBtn.addEventListener('click', () => lookupWord(wordInput.value));
+
+wordInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') lookupWord(wordInput.value);
+});
