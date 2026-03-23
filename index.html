@@ -4,45 +4,70 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>English Dictionary Mini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
+  <!-- Background Orbs -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+
   <div class="container">
     <!-- Header -->
     <header class="header">
-      <h1>📚 English Dictionary</h1>
-      <p class="subtitle">Search for English words and discover their meanings</p>
+      <div class="header-icon">📖</div>
+      <h1>English Dictionary</h1>
+      <p class="subtitle">Search for English words and discover their meanings, images, and more</p>
     </header>
 
     <!-- Search Section -->
     <div class="search-section">
-      <input 
-        type="text" 
-        id="searchInput" 
-        class="search-input" 
-        placeholder="Enter a word..."
-        autocomplete="off"
-      >
-      <button id="searchBtn" class="search-btn">🔍 Search</button>
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Type a word to explore..."
+          autocomplete="off"
+        >
+      </div>
+      <button id="searchBtn" class="search-btn">
+        <span>Search</span>
+        <span class="btn-arrow">→</span>
+      </button>
     </div>
 
     <!-- Error Message -->
-    <div id="error" class="error-message"></div>
+    <div id="error" class="error-message hidden"></div>
 
     <!-- Loading Spinner -->
     <div id="loading" class="loading hidden">
-      <div class="spinner"></div>
+      <div class="spinner-ring"></div>
+      <p class="loading-text">Looking up the word...</p>
     </div>
 
     <!-- Results Section -->
     <div id="result" class="result-section hidden">
+
+      <!-- Word Image -->
+      <div id="wordImageSection" class="word-image-section hidden">
+        <img id="wordImage" class="word-image" alt="" loading="lazy">
+        <div class="word-image-overlay"></div>
+      </div>
+
       <!-- Word Header -->
       <div class="word-header">
-        <div>
+        <div class="word-header-info">
           <h2 id="wordTitle" class="word-title"></h2>
           <p id="wordPhonetic" class="word-phonetic"></p>
         </div>
-        <button id="playSound" class="play-sound-btn">🔊</button>
+        <button id="playSound" class="play-sound-btn" title="Play pronunciation">
+          <span class="sound-icon">🔊</span>
+        </button>
       </div>
 
       <!-- Part of Speech -->
@@ -50,20 +75,20 @@
 
       <!-- Synonyms -->
       <div id="synonymsSection" class="synonyms-section hidden">
-        <h3>Synonyms</h3>
+        <h3><span class="section-icon">✨</span> Synonyms</h3>
         <div id="synonymsList" class="synonyms-list"></div>
       </div>
 
       <!-- Antonyms -->
       <div id="antonymsSection" class="antonyms-section hidden">
-        <h3>Antonyms</h3>
+        <h3><span class="section-icon">🔄</span> Antonyms</h3>
         <div id="antonymsList" class="antonyms-list"></div>
       </div>
 
       <!-- Source -->
       <div id="sourceSection" class="source-section hidden">
-        <h3>Source</h3>
-        <a id="sourceLink" href="#" target="_blank"></a>
+        <h3>📌 Source</h3>
+        <a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer"></a>
       </div>
     </div>
   </div>
