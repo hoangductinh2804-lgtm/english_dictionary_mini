@@ -1,4 +1,5 @@
 const API_BASE = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
+const TRANSLATE_API = 'https://api.mymemory.translated.net/get';
 const MAX_DEFINITIONS = 5;
 const MAX_SYNONYMS = 10;
 
@@ -33,6 +34,23 @@ const wordTitle = document.getElementById('wordTitle');
 const phoneticsDiv = document.getElementById('phonetics');
 const meaningsDiv = document.getElementById('meanings');
 
+async function translateText(text) {
+  if (!text || !text.trim()) return text;
+  try {
+    const response = await fetch(
+      `${TRANSLATE_API}?q=${encodeURIComponent(text)}&langpair=en|vi`
+    );
+    if (!response.ok) return text;
+    const data = await response.json();
+    if (data.responseStatus === 200 && data.responseData?.translatedText) {
+      return data.responseData.translatedText;
+    }
+  } catch {
+    // fall through on error
+  }
+  return text;
+}
+
 async function lookupWord(word) {
   if (!word.trim()) return;
 
@@ -55,7 +73,27 @@ async function lookupWord(word) {
     }
 
     const data = await response.json();
-    renderResult(data[0]);
+    const entry = data[0];
+
+    // Translate all definitions and examples to Vietnamese
+    const translationJobs = [];
+    if (entry.meanings) {
+      entry.meanings.forEach(meaning => {
+        meaning.definitions.slice(0, MAX_DEFINITIONS).forEach(def => {
+          translationJobs.push(
+            translateText(def.definition).then(t => { def.definition = t; })
+          );
+          if (def.example) {
+            translationJobs.push(
+              translateText(def.example).then(t => { def.example = t; })
+            );
+          }
+        });
+      });
+    }
+    await Promise.all(translationJobs);
+
+    renderResult(entry);
   } catch (err) {
     showError('Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại.');
   } finally {
